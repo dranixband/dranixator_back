@@ -5,20 +5,19 @@ import {
   ClientToServerEvents,
   ServerToClientEvents,
 } from "../socket/events.js";
-
-const PORT = Number(process.env.PORT) || 3001;
+import { env } from "../config.js";
 
 const fastify = Fastify({ logger: true });
 
 await fastify.register(cors, {
-  origin: ["http://localhost:5173", "http://localhost:3000"],
+  origin: env.CLIENT_URL,
 });
 
 export const io = new Server<ClientToServerEvents, ServerToClientEvents>(
   fastify.server,
   {
     cors: {
-      origin: ["http://localhost:5173", "http://localhost:3000"],
+      origin: env.CLIENT_URL,
       methods: ["GET", "POST"],
     },
   },
@@ -26,4 +25,4 @@ export const io = new Server<ClientToServerEvents, ServerToClientEvents>(
 
 fastify.get("/health", async () => ({ status: "ok" }));
 
-export { fastify, PORT };
+export { fastify };
