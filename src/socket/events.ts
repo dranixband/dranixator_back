@@ -1,4 +1,4 @@
-import { PathData } from "./types.js";
+import { PathData } from "../types/index.js";
 
 export interface ServerToClientEvents {
   "paths:update": (paths: PathData[]) => void;

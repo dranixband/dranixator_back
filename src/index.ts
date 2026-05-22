@@ -1,43 +1,7 @@
-import Fastify from "fastify";
-import cors from "@fastify/cors";
-import { Server } from "socket.io";
-import { getPaths, addPath } from "./state.js";
-import { ClientToServerEvents, ServerToClientEvents } from "./events.js";
+import { fastify, io, PORT } from "./server/index.js";
+import { registerSocketHandlers } from "./socket/index.js";
 
-const PORT = Number(process.env.PORT) || 3001;
-
-const fastify = Fastify({ logger: true });
-
-await fastify.register(cors, {
-  origin: ["http://localhost:5173", "http://localhost:3000"],
-});
-
-const io = new Server<ClientToServerEvents, ServerToClientEvents>(
-  fastify.server,
-  {
-    cors: {
-      origin: ["http://localhost:5173", "http://localhost:3000"],
-      methods: ["GET", "POST"],
-    },
-  },
-);
-
-io.on("connection", (socket) => {
-  console.log(`Client connected: ${socket.id}`);
-
-  socket.emit("paths:update", getPaths());
-
-  socket.on("path:create", (path) => {
-    const paths = addPath(path);
-    io.emit("paths:update", paths);
-  });
-
-  socket.on("disconnect", () => {
-    console.log(`Client disconnected: ${socket.id}`);
-  });
-});
-
-fastify.get("/health", async () => ({ status: "ok" }));
+registerSocketHandlers(io);
 
 await fastify.listen({ port: PORT, host: "0.0.0.0" });
 console.log(`Server running on port ${PORT}`);
