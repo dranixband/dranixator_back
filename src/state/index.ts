@@ -9,7 +9,26 @@ export function getPaths(): PathData[] {
 }
 
 export function addPath(path: PathData): PathData[] {
-  paths.push(path);
+  const index = paths.findIndex((p) => p.id === path.id);
+  if (index !== -1) {
+    paths[index] = path;
+  } else {
+    paths.push(path);
+  }
+  return paths;
+}
+
+export function updatePath(updated: PathData): PathData[] {
+  const index = paths.findIndex((p) => p.id === updated.id);
+  if (index !== -1) {
+    paths[index] = updated;
+  }
+  return paths;
+}
+
+export function setPaths(newPaths: PathData[]): PathData[] {
+  paths.length = 0;
+  paths.push(...newPaths);
   return paths;
 }
 

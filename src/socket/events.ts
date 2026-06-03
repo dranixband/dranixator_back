@@ -7,4 +7,6 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   "path:create": (path: PathData) => void;
+  "path:update": (path: PathData) => void;
+  "paths:update": (paths: PathData[]) => void;
 }

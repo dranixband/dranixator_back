@@ -1,7 +1,14 @@
 import { Server } from "socket.io";
 import { ClientToServerEvents, ServerToClientEvents } from "./events.js";
-import { validatePathData } from "./validation.js";
-import { getPaths, addPath, addClient, removeClient } from "../state/index.js";
+import { validatePathData, normalizePathData } from "./validation.js";
+import {
+  getPaths,
+  addPath,
+  updatePath,
+  setPaths,
+  addClient,
+  removeClient,
+} from "../state/index.js";
 
 export function registerSocketHandlers(
   io: Server<ClientToServerEvents, ServerToClientEvents>,
@@ -13,12 +20,32 @@ export function registerSocketHandlers(
     socket.emit("paths:update", getPaths());
     io.emit("online:update", count);
 
-    socket.on("path:create", (path) => {
-      if (!validatePathData(path)) {
-        console.error(`Invalid path:create payload from ${socket.id}`, path);
+    socket.on("path:create", (raw) => {
+      if (!validatePathData(raw)) {
+        console.error(`Invalid path:create payload from ${socket.id}`, raw);
         return;
       }
+      const path = normalizePathData(raw);
       const paths = addPath(path);
+      io.emit("paths:update", paths);
+    });
+
+    socket.on("path:update", (raw) => {
+      if (!validatePathData(raw)) {
+        console.error(`Invalid path:update payload from ${socket.id}`, raw);
+        return;
+      }
+      const path = normalizePathData(raw);
+      const paths = updatePath(path);
+      io.emit("paths:update", paths);
+    });
+
+    socket.on("paths:update", (incoming) => {
+      if (!Array.isArray(incoming)) {
+        console.error(`Invalid paths:update payload from ${socket.id}`);
+        return;
+      }
+      const paths = setPaths(incoming);
       io.emit("paths:update", paths);
     });
 

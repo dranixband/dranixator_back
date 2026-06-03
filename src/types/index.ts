@@ -4,6 +4,7 @@ export interface Review {
 }
 
 export interface PathData {
+  id: string;
   sourceChipId: number;
   nodes: { x: number; y: number }[];
   color: string;
