@@ -10,14 +10,14 @@ import { env } from "../config.js";
 const fastify = Fastify({ logger: true });
 
 await fastify.register(cors, {
-  origin: env.CLIENT_URL,
+  origin: env.CLIENT_URLS,
 });
 
 export const io = new Server<ClientToServerEvents, ServerToClientEvents>(
   fastify.server,
   {
     cors: {
-      origin: env.CLIENT_URL,
+      origin: env.CLIENT_URLS,
       methods: ["GET", "POST"],
     },
   },
