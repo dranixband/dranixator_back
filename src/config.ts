@@ -17,8 +17,5 @@ function normalizeOrigin(value: string): string {
 
 export const env = {
   PORT: Number(process.env.PORT) || 3001,
-  CLIENT_URLS: rawClientUrl
-    .split(",")
-    .map(normalizeOrigin)
-    .filter(Boolean),
+  CLIENT_URLS: rawClientUrl.split(",").map(normalizeOrigin).filter(Boolean),
 };
