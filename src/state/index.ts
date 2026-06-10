@@ -1,8 +1,11 @@
-import { PathData } from "../types/index.js";
+import { ChatMessage, PathData } from "../types/index.js";
 
 const paths: PathData[] = [];
 
 let onlineCount = 0;
+
+const MAX_CHAT_HISTORY = 200;
+const chatMessages: ChatMessage[] = [];
 
 export function getPaths(): PathData[] {
   return paths;
@@ -42,4 +45,16 @@ export function removeClient(): number {
 
 export function getOnlineCount(): number {
   return onlineCount;
+}
+
+export function getChatMessages(): ChatMessage[] {
+  return chatMessages;
+}
+
+export function addChatMessage(message: ChatMessage): ChatMessage {
+  chatMessages.push(message);
+  if (chatMessages.length > MAX_CHAT_HISTORY) {
+    chatMessages.splice(0, chatMessages.length - MAX_CHAT_HISTORY);
+  }
+  return message;
 }
