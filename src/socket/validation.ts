@@ -109,3 +109,73 @@ export function normalizeChatMessage(data: unknown): ChatMessage {
     ts: Date.now(),
   };
 }
+
+// ── Reactions ─────────────────────────────────────────────────────────
+const MAX_CLIENT_ID_LEN = 64;
+const MAX_REACTION_ID_LEN = 40;
+
+export function validateReactionPayload(data: unknown): boolean {
+  if (typeof data !== "object" || data === null) return false;
+  const obj = data as Record<string, unknown>;
+  if (
+    typeof obj.clientId !== "string" ||
+    obj.clientId.length === 0 ||
+    obj.clientId.length > MAX_CLIENT_ID_LEN
+  ) {
+    return false;
+  }
+  if (typeof obj.chipId !== "number" || !Number.isFinite(obj.chipId)) {
+    return false;
+  }
+  if (obj.reactionId !== null) {
+    if (
+      typeof obj.reactionId !== "string" ||
+      obj.reactionId.length === 0 ||
+      obj.reactionId.length > MAX_REACTION_ID_LEN
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// ── Claims ────────────────────────────────────────────────────────────
+
+export function validateClaimAcquire(data: unknown): boolean {
+  if (typeof data !== "object" || data === null) return false;
+  const obj = data as Record<string, unknown>;
+  if (typeof obj.chipId !== "number" || !Number.isFinite(obj.chipId)) {
+    return false;
+  }
+  if (
+    typeof obj.clientId !== "string" ||
+    obj.clientId.length === 0 ||
+    obj.clientId.length > MAX_CLIENT_ID_LEN
+  ) {
+    return false;
+  }
+  if (typeof obj.nickname !== "string") return false;
+  const trimmed = obj.nickname.trim();
+  if (trimmed.length === 0 || trimmed.length > MAX_NICK_LEN) return false;
+  return true;
+}
+
+export function normalizeClaimNickname(nickname: string): string {
+  return nickname.trim().slice(0, MAX_NICK_LEN);
+}
+
+export function validateClaimRelease(data: unknown): boolean {
+  if (typeof data !== "object" || data === null) return false;
+  const obj = data as Record<string, unknown>;
+  if (typeof obj.chipId !== "number" || !Number.isFinite(obj.chipId)) {
+    return false;
+  }
+  if (
+    typeof obj.clientId !== "string" ||
+    obj.clientId.length === 0 ||
+    obj.clientId.length > MAX_CLIENT_ID_LEN
+  ) {
+    return false;
+  }
+  return true;
+}
